@@ -4,7 +4,8 @@
  * Description: Ferramentas de SEO técnico para WordPress — redirecionamentos, links quebrados, dados estruturados, canonical e robots.
  * Version: 0.1.0
  * Author: Garion Projetos
- * License: GPL-2.0+
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: wp-technical-seo-toolkit
  */
 
