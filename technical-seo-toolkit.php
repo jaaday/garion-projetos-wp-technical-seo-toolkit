@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: WP Technical SEO Toolkit
- * Description: Ferramentas de SEO tecnico para WordPress: redirecionamentos, links quebrados, dados estruturados, canonical e robots.
+ * Plugin Name: Technical SEO Toolkit
+ * Description: Technical SEO tools for WordPress: redirects, broken link detection, structured data, canonical control and robots configuration.
  * Version: 0.1.0
  * Author: Garion Projetos
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: wp-technical-seo-toolkit
+ * Text Domain: technical-seo-toolkit
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

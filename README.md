@@ -1,4 +1,4 @@
-# Garion Projetos — WP Technical SEO Toolkit
+# Garion Projetos — Technical SEO Toolkit
 
 Plugin WordPress próprio para SEO técnico, indexação e rastreabilidade.
 
@@ -21,8 +21,8 @@ Plugin WordPress próprio para SEO técnico, indexação e rastreabilidade.
 ## Estrutura
 
 ```
-wp-technical-seo-toolkit/
-├── wp-technical-seo-toolkit.php   # arquivo principal do plugin
+technical-seo-toolkit/
+├── technical-seo-toolkit.php      # arquivo principal do plugin
 ├── includes/                      # classes e lógica
 ├── admin/                         # tela administrativa
 └── assets/                        # CSS/JS

@@ -1,47 +1,47 @@
-=== WP Technical SEO Toolkit ===
+=== Technical SEO Toolkit ===
 Contributors: garionprojetos
 Tags: seo, redirects, structured-data, canonical, robots
 Requires at least: 6.0
-Tested up to: 6.6
+Tested up to: 7.0
 Requires PHP: 8.0
 Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Ferramentas de SEO tecnico: redirecionamentos, links quebrados, dados estruturados, canonical e robots.
+Technical SEO tools: redirect management, broken link detection, structured data, canonical control and robots configuration.
 
 == Description ==
 
-WP Technical SEO Toolkit adiciona um conjunto de ferramentas de SEO tecnico ao WordPress:
+Technical SEO Toolkit adds a set of technical SEO tools to WordPress:
 
-* Gerenciamento de redirecionamentos
-* Deteccao de links quebrados
-* Insercao de dados estruturados (Schema.org)
-* Controle de canonical
-* Configuracao de robots.txt / meta robots
-* Auditoria basica de paginas
-* Integracao com a REST API do WordPress
+* Redirect management
+* Broken link detection
+* Structured data insertion (Schema.org)
+* Canonical control
+* robots.txt / meta robots configuration
+* Basic page auditing
+* WordPress REST API integration
 
-Este plugin nao envia dados para servidores externos. Todo o processamento acontece localmente, no seu proprio site.
+This plugin does not send data to external servers. All processing happens locally, on your own site.
 
 == Installation ==
 
-1. Envie a pasta do plugin para `/wp-content/plugins/`.
-2. Ative o plugin em "Plugins" no painel do WordPress.
-3. Configure as opcoes em "Ajustes > WP Technical SEO Toolkit".
+1. Upload the plugin folder to `/wp-content/plugins/`.
+2. Activate the plugin from the "Plugins" screen.
+3. Configure the options under "Settings > Technical SEO Toolkit".
 
 == Frequently Asked Questions ==
 
-= Este plugin envia dados para servicos externos? =
+= Does this plugin send data to external services? =
 
-Nao. As verificacoes de SEO sao feitas localmente.
+No. All SEO checks run locally.
 
 == Changelog ==
 
 = 0.1.0 =
-* Versao inicial do plugin.
+* Initial release.
 
 == Upgrade Notice ==
 
 = 0.1.0 =
-Versao inicial.
+Initial release.
