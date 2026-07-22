@@ -55,7 +55,48 @@ class GP_SEO_Redirects {
 		return '' === $path ? '/' : $path;
 	}
 
-	public function get_all() {
+	public function get_all( $search = '', $per_page = 20, $paged = 1 ) {
+		global $wpdb;
+
+		$table  = self::table_name();
+		$offset = ( max( 1, $paged ) - 1 ) * $per_page;
+
+		if ( $search ) {
+			$like = '%' . $wpdb->esc_like( $search ) . '%';
+
+			return $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT * FROM {$table} WHERE source_path LIKE %s OR destination_url LIKE %s ORDER BY id DESC LIMIT %d OFFSET %d",
+					$like,
+					$like,
+					$per_page,
+					$offset
+				)
+			);
+		}
+
+		return $wpdb->get_results(
+			$wpdb->prepare( "SELECT * FROM {$table} ORDER BY id DESC LIMIT %d OFFSET %d", $per_page, $offset )
+		);
+	}
+
+	public function count_all( $search = '' ) {
+		global $wpdb;
+
+		$table = self::table_name();
+
+		if ( $search ) {
+			$like = '%' . $wpdb->esc_like( $search ) . '%';
+
+			return (int) $wpdb->get_var(
+				$wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE source_path LIKE %s OR destination_url LIKE %s", $like, $like )
+			);
+		}
+
+		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
+	}
+
+	public function get_all_unpaginated() {
 		global $wpdb;
 
 		$table = self::table_name();

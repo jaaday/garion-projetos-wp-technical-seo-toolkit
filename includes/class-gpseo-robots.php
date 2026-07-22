@@ -42,12 +42,18 @@ class GP_SEO_Robots {
 	}
 
 	public function filter_robots_txt( $output, $public ) {
-		$extra_rules = get_option( 'gpseo_robots_txt_extra', '' );
-
-		if ( ! $public || '' === trim( (string) $extra_rules ) ) {
+		if ( ! $public ) {
 			return $output;
 		}
 
-		return $output . "\n" . trim( $extra_rules ) . "\n";
+		$extra_rules = trim( (string) get_option( 'gpseo_robots_txt_extra', '' ) );
+
+		if ( $extra_rules ) {
+			$output .= "\n" . $extra_rules . "\n";
+		}
+
+		$output .= "\nSitemap: " . GP_SEO_Sitemap::sitemap_url() . "\n";
+
+		return $output;
 	}
 }

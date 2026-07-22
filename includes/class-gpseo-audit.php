@@ -9,18 +9,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class GP_SEO_Audit {
 
-	const LIMIT = 100;
-
-	public function run() {
-		$posts = get_posts(
-			array(
-				'post_type'      => array( 'post', 'page' ),
-				'post_status'    => 'publish',
-				'posts_per_page' => self::LIMIT,
-				'orderby'        => 'date',
-				'order'          => 'DESC',
-			)
+	/**
+	 * @return array {rows: array[], total: int}
+	 */
+	public function run( $search = '', $paged = 1, $per_page = 20 ) {
+		$query_args = array(
+			'post_type'      => array( 'post', 'page' ),
+			'post_status'    => 'publish',
+			'posts_per_page' => $per_page,
+			'paged'          => max( 1, $paged ),
+			'orderby'        => 'date',
+			'order'          => 'DESC',
 		);
+
+		if ( $search ) {
+			$query_args['s'] = $search;
+		}
+
+		$query = new WP_Query( $query_args );
+		$posts = $query->posts;
 
 		$broken_links_by_post = $this->broken_link_counts();
 
@@ -59,7 +66,10 @@ class GP_SEO_Audit {
 			);
 		}
 
-		return $rows;
+		return array(
+			'rows'  => $rows,
+			'total' => (int) $query->found_posts,
+		);
 	}
 
 	private function has_meta_description( $post ) {

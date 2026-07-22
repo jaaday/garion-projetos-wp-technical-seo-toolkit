@@ -95,12 +95,40 @@ class GP_SEO_Broken_Links {
 		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
 	}
 
-	public function get_results() {
+	public function count_all( $search = '' ) {
 		global $wpdb;
 
 		$table = self::table_name();
 
-		return $wpdb->get_results( "SELECT * FROM {$table} ORDER BY last_checked_at DESC LIMIT 200" );
+		if ( $search ) {
+			return (int) $wpdb->get_var(
+				$wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE url LIKE %s", '%' . $wpdb->esc_like( $search ) . '%' )
+			);
+		}
+
+		return $this->count_results();
+	}
+
+	public function get_results( $search = '', $per_page = 20, $paged = 1 ) {
+		global $wpdb;
+
+		$table  = self::table_name();
+		$offset = ( max( 1, $paged ) - 1 ) * $per_page;
+
+		if ( $search ) {
+			return $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT * FROM {$table} WHERE url LIKE %s ORDER BY last_checked_at DESC LIMIT %d OFFSET %d",
+					'%' . $wpdb->esc_like( $search ) . '%',
+					$per_page,
+					$offset
+				)
+			);
+		}
+
+		return $wpdb->get_results(
+			$wpdb->prepare( "SELECT * FROM {$table} ORDER BY last_checked_at DESC LIMIT %d OFFSET %d", $per_page, $offset )
+		);
 	}
 
 	/**

@@ -7,3 +7,70 @@
 	font-style: italic;
 	color: #646970;
 }
+
+.gpseo-social-preview {
+	display: flex;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	overflow: hidden;
+	max-width: 500px;
+	margin-top: 10px;
+	background: #fff;
+}
+
+.gpseo-social-preview-image {
+	width: 120px;
+	min-width: 120px;
+	background-color: #f0f0f1;
+	background-size: cover;
+	background-position: center;
+}
+
+.gpseo-social-preview-body {
+	padding: 10px 12px;
+	overflow: hidden;
+}
+
+.gpseo-social-preview-title {
+	margin: 0 0 4px;
+	font-weight: 600;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.gpseo-social-preview-description {
+	margin: 0 0 4px;
+	font-size: 0.9em;
+	color: #555;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.gpseo-social-preview-url {
+	margin: 0;
+	font-size: 0.8em;
+	color: #787c82;
+	text-transform: uppercase;
+}
+
+.tablenav-pages {
+	margin: 12px 0;
+}
+
+.tablenav-pages .page-numbers {
+	display: inline-block;
+	padding: 4px 9px;
+	margin-right: 4px;
+	border: 1px solid #c3c4c7;
+	border-radius: 3px;
+	text-decoration: none;
+}
+
+.tablenav-pages .page-numbers.current {
+	background: #2271b1;
+	border-color: #2271b1;
+	color: #fff;
+}
