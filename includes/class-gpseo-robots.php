@@ -13,8 +13,11 @@ class GP_SEO_Robots {
 	const NOFOLLOW_META_KEY = '_gpseo_nofollow';
 
 	public function __construct() {
-		add_filter( 'wp_robots', array( $this, 'filter_wp_robots' ) );
-		add_filter( 'robots_txt', array( $this, 'filter_robots_txt' ), 10, 2 );
+		if ( ! GP_SEO_Rank_Math_Compatibility::is_active() ) {
+			add_filter( 'wp_robots', array( $this, 'filter_wp_robots' ) );
+		}
+
+		add_filter( 'robots_txt', array( $this, 'filter_robots_txt' ), 20, 2 );
 	}
 
 	public function filter_wp_robots( $robots ) {
@@ -23,7 +26,6 @@ class GP_SEO_Robots {
 		}
 
 		$post_id = get_queried_object_id();
-
 		if ( ! $post_id ) {
 			return $robots;
 		}
@@ -47,12 +49,14 @@ class GP_SEO_Robots {
 		}
 
 		$extra_rules = trim( (string) get_option( 'gpseo_robots_txt_extra', '' ) );
-
-		if ( $extra_rules ) {
+		if ( $extra_rules && false === strpos( $output, $extra_rules ) ) {
 			$output .= "\n" . $extra_rules . "\n";
 		}
 
-		$output .= "\nSitemap: " . GP_SEO_Sitemap::sitemap_url() . "\n";
+		$sitemap_line = 'Sitemap: ' . GP_SEO_Sitemap::sitemap_url();
+		if ( false === strpos( $output, $sitemap_line ) ) {
+			$output .= "\n" . $sitemap_line . "\n";
+		}
 
 		return $output;
 	}

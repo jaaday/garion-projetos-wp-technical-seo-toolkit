@@ -16,22 +16,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class GP_SEO_Broken_Links {
 
-	const CRON_HOOK  = 'gpseo_scan_broken_links_tick';
-	const BATCH_SIZE = 15;
+	const CRON_HOOK   = 'gpseo_scan_broken_links_tick';
+	const DAILY_HOOK  = 'gpseo_start_daily_broken_links_scan';
+	const BATCH_SIZE         = 15;
+	const MAX_LINKS_PER_POST = 100;
 
 	public function __construct() {
 		add_action( self::CRON_HOOK, array( $this, 'scan_batch' ) );
-		add_filter( 'cron_schedules', array( __CLASS__, 'register_schedule' ) );
+		add_action( self::DAILY_HOOK, array( $this, 'start_scheduled_scan' ) );
 	}
 
-	public static function register_schedule( $schedules ) {
-		$schedules['gpseo_ten_minutes'] = array(
-			'interval' => 10 * MINUTE_IN_SECONDS,
-			'display'  => __( 'Every 10 minutes (Technical SEO Toolkit link scan)', 'garion-projetos-technical-seo-toolkit' ),
-		);
-
-		return $schedules;
-	}
 
 	public static function table_name() {
 		global $wpdb;
@@ -51,21 +45,36 @@ class GP_SEO_Broken_Links {
 			url TEXT NOT NULL,
 			anchor_text VARCHAR(255) NOT NULL DEFAULT '',
 			http_status VARCHAR(20) NOT NULL DEFAULT '',
+			final_url TEXT NULL,
+			is_ignored TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 			last_checked_at DATETIME NOT NULL,
 			PRIMARY KEY  (id),
-			KEY post_id (post_id)
+			KEY post_id (post_id),
+			UNIQUE KEY post_url (post_id, url(191))
 		) {$charset_collate};";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
 
-		if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
-			wp_schedule_event( time(), 'gpseo_ten_minutes', self::CRON_HOOK );
+		$legacy_event = wp_get_scheduled_event( self::CRON_HOOK );
+		if ( $legacy_event && ! empty( $legacy_event->schedule ) ) {
+			wp_clear_scheduled_hook( self::CRON_HOOK );
+		}
+
+		if ( ! wp_next_scheduled( self::DAILY_HOOK ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', self::DAILY_HOOK );
 		}
 	}
 
 	public static function deactivate() {
 		wp_clear_scheduled_hook( self::CRON_HOOK );
+		wp_clear_scheduled_hook( self::DAILY_HOOK );
+	}
+
+	public function start_scheduled_scan() {
+		if ( 'running' !== get_option( 'gpseo_scan_status', 'idle' ) ) {
+			$this->trigger_scan_now();
+		}
 	}
 
 	public function trigger_scan_now() {
@@ -167,42 +176,32 @@ class GP_SEO_Broken_Links {
 		}
 	}
 
+	public function rescan_post( $post_id ) {
+		$post = get_post( (int) $post_id );
+		if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status ) { return false; }
+		$this->scan_post( $post );
+		return true;
+	}
+
 	private function scan_post( $post ) {
 		global $wpdb;
 
 		$table = self::table_name();
-		$links = $this->extract_links( $post->post_content );
+		$links = array_slice( $this->extract_links( $post->post_content ), 0, self::MAX_LINKS_PER_POST, true );
+
+		$ignored_urls = $wpdb->get_col( $wpdb->prepare( "SELECT url FROM {$table} WHERE post_id = %d AND is_ignored = 1", (int) $post->ID ) );
+		$wpdb->delete( $table, array( 'post_id' => (int) $post->ID ), array( '%d' ) );
 
 		foreach ( $links as $url => $anchor_text ) {
-			$status = $this->check_url( $url );
-
-			$existing = $wpdb->get_var(
-				$wpdb->prepare( "SELECT id FROM {$table} WHERE post_id = %d AND url = %s", $post->ID, $url )
-			);
-
-			if ( false === $status ) {
-				if ( $existing ) {
-					$wpdb->delete( $table, array( 'id' => (int) $existing ), array( '%d' ) );
-				}
-				continue;
-			}
-
-			$data = array(
-				'post_id'          => $post->ID,
-				'url'              => $url,
-				'anchor_text'      => wp_trim_words( $anchor_text, 10 ),
-				'http_status'      => (string) $status,
-				'last_checked_at'  => current_time( 'mysql' ),
-			);
-
-			if ( $existing ) {
-				$wpdb->update( $table, $data, array( 'id' => (int) $existing ) );
-			} else {
-				$wpdb->insert( $table, $data );
-			}
+			$check = $this->check_url( $url );
+			if ( false === $check ) { continue; }
+			$wpdb->insert( $table, array(
+				'post_id' => (int) $post->ID, 'url' => $url, 'anchor_text' => wp_trim_words( $anchor_text, 10 ),
+				'http_status' => (string) $check['status'], 'final_url' => $check['final_url'],
+				'is_ignored' => in_array( $url, $ignored_urls, true ) ? 1 : 0, 'last_checked_at' => current_time( 'mysql' ),
+			) );
 		}
 	}
-
 	private function extract_links( $content ) {
 		$links = array();
 
@@ -227,24 +226,61 @@ class GP_SEO_Broken_Links {
 	 * Returns the HTTP status code for a broken link, or false if the link works.
 	 */
 	private function check_url( $url ) {
+		$url = $this->normalize_url( $url );
+		if ( ! $url ) {
+			return false;
+		}
+
 		$args = array(
-			'timeout'     => 10,
-			'redirection' => 5,
+			'timeout'             => 8,
+			'redirection'         => 5,
+			'limit_response_size' => 1024,
+			'user-agent'          => 'Garion Technical SEO Toolkit/' . GPSEO_VERSION . '; ' . home_url( '/' ),
 		);
 
-		$response = wp_remote_head( $url, $args );
-
+		$response = wp_safe_remote_head( $url, $args );
 		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) >= 400 ) {
-			$response = wp_remote_get( $url, $args );
+			$response = wp_safe_remote_get( $url, $args );
 		}
 
-		if ( is_wp_error( $response ) ) {
-			return 'error';
+		if ( is_wp_error( $response ) ) { return array( 'status' => 'error', 'final_url' => $url ); }
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( $code > 0 && $code < 400 ) { return false; }
+		$final_url = $url;
+		if ( isset( $response['http_response'] ) && is_object( $response['http_response'] ) && method_exists( $response['http_response'], 'get_response_object' ) ) {
+			$object = $response['http_response']->get_response_object();
+			if ( is_object( $object ) && ! empty( $object->url ) ) { $final_url = esc_url_raw( $object->url ); }
+		}
+		return array( 'status' => $code ? $code : 'error', 'final_url' => $final_url );
+	}
+
+	public function get( $id ) {
+		global $wpdb;
+		$table = self::table_name();
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE id = %d", (int) $id ) );
+	}
+	public function set_ignored( $id, $ignored = true ) {
+		global $wpdb;
+		return false !== $wpdb->update( self::table_name(), array( 'is_ignored' => $ignored ? 1 : 0 ), array( 'id' => (int) $id ), array( '%d' ), array( '%d' ) );
+	}
+	private function normalize_url( $url ) {
+		$url = html_entity_decode( trim( (string) $url ), ENT_QUOTES, get_bloginfo( 'charset' ) );
+		if ( '' === $url || 0 === strpos( $url, '//' ) ) {
+			return false;
 		}
 
-		$code = wp_remote_retrieve_response_code( $response );
+		if ( 0 === strpos( $url, '/' ) ) {
+			$url = home_url( $url );
+		} elseif ( ! wp_parse_url( $url, PHP_URL_SCHEME ) ) {
+			$url = home_url( '/' . ltrim( $url, '/' ) );
+		}
 
-		return $code >= 400 ? $code : false;
+		$scheme = strtolower( (string) wp_parse_url( $url, PHP_URL_SCHEME ) );
+		if ( ! in_array( $scheme, array( 'http', 'https' ), true ) || ! wp_http_validate_url( $url ) ) {
+			return false;
+		}
+
+		return esc_url_raw( $url );
 	}
 }
 

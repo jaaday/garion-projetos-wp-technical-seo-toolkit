@@ -1,17 +1,899 @@
-.gpseo-tab-content {
-	margin-top: 20px;
+/**
+ * Garion Projetos Technical SEO Toolkit — admin design system.
+ * Scoped entirely under .gpseo-wrap / .gpseo-metabox so nothing here leaks
+ * into other plugins' screens or the rest of wp-admin.
+ */
+
+.gpseo-wrap,
+.gpseo-metabox {
+	--gpseo-primary: #ff7b1a;
+	--gpseo-primary-dark: #e0670f;
+	--gpseo-primary-bg: #fff3e9;
+	--gpseo-dark: #0a0a0a;
+	--gpseo-surface: #ffffff;
+	--gpseo-bg: #f0f0f1;
+	--gpseo-border: #dcdcde;
+	--gpseo-border-strong: #c3c4c7;
+	--gpseo-text: #1d2327;
+	--gpseo-text-muted: #646970;
+	--gpseo-success: #007939;
+	--gpseo-success-bg: #edfaef;
+	--gpseo-warning: #8a6100;
+	--gpseo-warning-bg: #fcf5e3;
+	--gpseo-danger: #b32d2e;
+	--gpseo-danger-bg: #fcf0f1;
+	--gpseo-info: #0a5687;
+	--gpseo-info-bg: #f0f6fc;
+	--gpseo-neutral: #50575e;
+	--gpseo-neutral-bg: #f0f0f1;
+	--gpseo-radius: 8px;
+	--gpseo-radius-sm: 4px;
+	--gpseo-shadow-sm: 0 1px 2px rgba(10, 10, 10, 0.05);
+	--gpseo-shadow: 0 1px 3px rgba(10, 10, 10, 0.08), 0 1px 2px rgba(10, 10, 10, 0.04);
 }
 
-#gpseo-scan-message {
-	margin-left: 10px;
+/* -------------------------------------------------------------------- */
+/* Base layout                                                          */
+/* -------------------------------------------------------------------- */
+
+.gpseo-wrap {
+	max-width: 1360px;
+}
+
+.gpseo-wrap *,
+.gpseo-wrap *::before,
+.gpseo-wrap *::after {
+	box-sizing: border-box;
+}
+
+.gpseo-panel {
+	margin-top: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Header                                                                */
+/* -------------------------------------------------------------------- */
+
+.gpseo-header {
+	display: flex;
+	align-items: flex-start;
+	gap: 16px;
+	background: var(--gpseo-dark);
+	color: #f5f5f5;
+	padding: 20px 24px;
+	border-radius: var(--gpseo-radius);
+	margin: 16px 0 0;
+}
+
+.gpseo-header__icon {
+	flex: 0 0 auto;
+	width: 44px;
+	height: 44px;
+	border-radius: var(--gpseo-radius-sm);
+	background: var(--gpseo-primary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.gpseo-header__icon .dashicons {
+	color: #0a0a0a;
+	width: 24px;
+	height: 24px;
+	font-size: 24px;
+}
+
+.gpseo-header__title {
+	margin: 0 0 4px;
+	font-size: 20px;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.gpseo-header__version {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	background: rgba(255, 123, 26, 0.18);
+	color: var(--gpseo-primary);
+	border: 1px solid rgba(255, 123, 26, 0.4);
+	border-radius: 999px;
+	padding: 2px 10px;
+}
+
+.gpseo-header__desc {
+	margin: 0;
+	color: #c3c4c7;
+	font-size: 13px;
+	max-width: 70ch;
+}
+
+/* -------------------------------------------------------------------- */
+/* Breadcrumbs                                                           */
+/* -------------------------------------------------------------------- */
+
+.gpseo-breadcrumbs {
+	margin: 12px 0 0;
+	font-size: 13px;
+	color: var(--gpseo-text-muted);
+}
+
+.gpseo-breadcrumbs a {
+	text-decoration: none;
+	color: var(--gpseo-info);
+}
+
+.gpseo-breadcrumbs a:hover {
+	text-decoration: underline;
+}
+
+.gpseo-breadcrumbs__sep {
+	margin: 0 6px;
+	color: var(--gpseo-border-strong);
+}
+
+/* -------------------------------------------------------------------- */
+/* Tabs                                                                  */
+/* -------------------------------------------------------------------- */
+
+.gpseo-tabs.nav-tab-wrapper {
+	margin-top: 18px;
+	border-bottom-color: var(--gpseo-border-strong);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.gpseo-tabs__link.nav-tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	border-radius: var(--gpseo-radius-sm) var(--gpseo-radius-sm) 0 0;
+	background: var(--gpseo-bg);
+	color: var(--gpseo-text);
+	border-color: var(--gpseo-border);
+}
+
+.gpseo-tabs__link.nav-tab .gpseo-icon {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.gpseo-tabs__link--active.nav-tab-active {
+	background: var(--gpseo-surface);
+	border-bottom-color: var(--gpseo-surface);
+	color: var(--gpseo-dark);
+	box-shadow: inset 0 3px 0 var(--gpseo-primary);
+}
+
+.gpseo-tabs__link:focus-visible {
+	outline: 2px solid var(--gpseo-primary);
+	outline-offset: -2px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Cards                                                                 */
+/* -------------------------------------------------------------------- */
+
+.gpseo-card {
+	background: var(--gpseo-surface);
+	border: 1px solid var(--gpseo-border);
+	border-radius: var(--gpseo-radius);
+	box-shadow: var(--gpseo-shadow-sm);
+}
+
+.gpseo-card__header {
+	padding: 16px 20px 0;
+}
+
+.gpseo-card__title {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.gpseo-card__subtitle {
+	margin: 4px 0 0;
+	color: var(--gpseo-text-muted);
+	font-size: 13px;
+}
+
+.gpseo-card__body {
+	padding: 16px 20px 20px;
+}
+
+.gpseo-card__body > *:first-child {
+	margin-top: 0;
+}
+
+.gpseo-card__body h2,
+.gpseo-card__body h3 {
+	margin: 24px 0 8px;
+	line-height: 1.3;
+}
+
+.gpseo-card__body > p {
+	margin: 0 0 16px;
+}
+
+.gpseo-card__body > p:last-child {
+	margin-bottom: 0;
+}
+
+.gpseo-remediation h3:first-child {
+	margin-top: 0;
+}
+
+/* -------------------------------------------------------------------- */
+/* Quick actions                                                         */
+/* -------------------------------------------------------------------- */
+
+.gpseo-quick-actions {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-bottom: 8px;
+}
+
+.gpseo-quick-actions__status {
+	color: var(--gpseo-text-muted);
 	font-style: italic;
-	color: #646970;
+}
+
+/* -------------------------------------------------------------------- */
+/* Buttons — keep native WP admin buttons but adopt the brand accent     */
+/* -------------------------------------------------------------------- */
+
+.gpseo-wrap .button-primary,
+.gpseo-metabox .button-primary {
+	background: var(--gpseo-primary);
+	border-color: var(--gpseo-primary-dark);
+	color: #1a1000;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+.gpseo-wrap .button-primary:hover,
+.gpseo-wrap .button-primary:focus,
+.gpseo-metabox .button-primary:hover,
+.gpseo-metabox .button-primary:focus {
+	background: var(--gpseo-primary-dark);
+	border-color: var(--gpseo-primary-dark);
+	color: #fff;
+}
+
+.gpseo-wrap .button-primary .gpseo-icon {
+	color: inherit;
+}
+
+.gpseo-wrap .button:focus-visible,
+.gpseo-metabox .button:focus-visible,
+.gpseo-wrap a:focus-visible {
+	outline: 2px solid var(--gpseo-primary);
+	outline-offset: 1px;
+	box-shadow: none;
+}
+
+.gpseo-link-destructive {
+	color: var(--gpseo-danger);
+}
+
+.gpseo-link-destructive:hover {
+	color: #7a1d1e;
+}
+
+/* -------------------------------------------------------------------- */
+/* Metrics grid                                                          */
+/* -------------------------------------------------------------------- */
+
+.gpseo-metrics {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 12px;
+	margin: 16px 0;
+}
+
+.gpseo-metric {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	background: var(--gpseo-surface);
+	border: 1px solid var(--gpseo-border);
+	border-left: 4px solid var(--gpseo-neutral);
+	border-radius: var(--gpseo-radius-sm);
+	padding: 14px 16px;
+}
+
+.gpseo-metric__icon {
+	flex: 0 0 auto;
+	display: flex;
+}
+
+.gpseo-metric__icon .dashicons {
+	font-size: 22px;
+	width: 22px;
+	height: 22px;
+}
+
+.gpseo-metric__value {
+	display: block;
+	font-size: 26px;
+	line-height: 1.2;
+	font-weight: 600;
+}
+
+.gpseo-metric__label {
+	display: block;
+	margin-top: 2px;
+	color: var(--gpseo-text-muted);
+	font-size: 12.5px;
+}
+
+.gpseo-metric--primary { border-left-color: var(--gpseo-primary); }
+.gpseo-metric--primary .gpseo-metric__icon .dashicons { color: var(--gpseo-primary); }
+
+.gpseo-metric--critical { border-left-color: var(--gpseo-danger); }
+.gpseo-metric--critical .gpseo-metric__icon .dashicons { color: var(--gpseo-danger); }
+
+.gpseo-metric--high { border-left-color: var(--gpseo-danger); }
+.gpseo-metric--high .gpseo-metric__icon .dashicons { color: var(--gpseo-danger); }
+
+.gpseo-metric--warning { border-left-color: var(--gpseo-warning); }
+.gpseo-metric--warning .gpseo-metric__icon .dashicons { color: var(--gpseo-warning); }
+
+.gpseo-metric--info { border-left-color: var(--gpseo-info); }
+.gpseo-metric--info .gpseo-metric__icon .dashicons { color: var(--gpseo-info); }
+
+.gpseo-metric--success { border-left-color: var(--gpseo-success); }
+.gpseo-metric--success .gpseo-metric__icon .dashicons { color: var(--gpseo-success); }
+
+.gpseo-metric--neutral { border-left-color: var(--gpseo-neutral); }
+.gpseo-metric--neutral .gpseo-metric__icon .dashicons { color: var(--gpseo-neutral); }
+
+/* -------------------------------------------------------------------- */
+/* Badges — always icon + label, never color alone                      */
+/* -------------------------------------------------------------------- */
+
+.gpseo-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 3px 9px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
+	white-space: nowrap;
+	border: 1px solid transparent;
+}
+
+.gpseo-badge .gpseo-icon {
+	font-size: 13px;
+	width: 13px;
+	height: 13px;
+}
+
+.gpseo-badge--critical,
+.gpseo-badge--high {
+	background: var(--gpseo-danger-bg);
+	color: var(--gpseo-danger);
+	border-color: rgba(179, 45, 46, 0.25);
+}
+
+.gpseo-badge--warning {
+	background: var(--gpseo-warning-bg);
+	color: var(--gpseo-warning);
+	border-color: rgba(138, 97, 0, 0.25);
+}
+
+.gpseo-badge--info {
+	background: var(--gpseo-info-bg);
+	color: var(--gpseo-info);
+	border-color: rgba(10, 86, 135, 0.2);
+}
+
+.gpseo-badge--success {
+	background: var(--gpseo-success-bg);
+	color: var(--gpseo-success);
+	border-color: rgba(0, 121, 57, 0.2);
+}
+
+.gpseo-badge--neutral {
+	background: var(--gpseo-neutral-bg);
+	color: var(--gpseo-neutral);
+	border-color: var(--gpseo-border);
+}
+
+.gpseo-badge--primary {
+	background: var(--gpseo-primary-bg);
+	color: var(--gpseo-primary-dark);
+	border-color: rgba(255, 123, 26, 0.3);
+}
+
+/* -------------------------------------------------------------------- */
+/* Alerts                                                                */
+/* -------------------------------------------------------------------- */
+
+.gpseo-alert {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+	padding: 12px 14px;
+	border-radius: var(--gpseo-radius-sm);
+	border: 1px solid transparent;
+	margin: 0 0 16px;
+	font-size: 13px;
+}
+
+.gpseo-alert .gpseo-icon {
+	margin-top: 2px;
+	flex: 0 0 auto;
+}
+
+.gpseo-alert__body p:last-child {
+	margin-bottom: 0;
+}
+
+.gpseo-alert--info {
+	background: var(--gpseo-info-bg);
+	border-color: rgba(10, 86, 135, 0.2);
+	color: #0a3a58;
+}
+.gpseo-alert--info .gpseo-icon { color: var(--gpseo-info); }
+
+.gpseo-alert--success {
+	background: var(--gpseo-success-bg);
+	border-color: rgba(0, 121, 57, 0.2);
+	color: #0a4b26;
+}
+.gpseo-alert--success .gpseo-icon { color: var(--gpseo-success); }
+
+.gpseo-alert--warning {
+	background: var(--gpseo-warning-bg);
+	border-color: rgba(138, 97, 0, 0.25);
+	color: #5c4200;
+}
+.gpseo-alert--warning .gpseo-icon { color: var(--gpseo-warning); }
+
+.gpseo-alert--danger {
+	background: var(--gpseo-danger-bg);
+	border-color: rgba(179, 45, 46, 0.25);
+	color: #7a1d1e;
+}
+.gpseo-alert--danger .gpseo-icon { color: var(--gpseo-danger); }
+
+/* -------------------------------------------------------------------- */
+/* Empty states                                                          */
+/* -------------------------------------------------------------------- */
+
+.gpseo-empty-state {
+	text-align: center;
+	padding: 36px 20px;
+	color: var(--gpseo-text-muted);
+}
+
+.gpseo-empty-state .gpseo-icon {
+	font-size: 32px;
+	width: 32px;
+	height: 32px;
+	color: var(--gpseo-border-strong);
+	margin-bottom: 8px;
+}
+
+.gpseo-empty-state__title {
+	margin: 0;
+	font-weight: 600;
+	color: var(--gpseo-text);
+}
+
+.gpseo-empty-state__desc {
+	margin: 4px 0 0;
+	font-size: 13px;
+}
+
+.gpseo-empty-state__action {
+	margin-top: 14px;
+}
+
+.gpseo-empty-row td {
+	border: none !important;
+}
+
+/* -------------------------------------------------------------------- */
+/* Tables — responsive: collapse to stacked cards under 782px            */
+/* -------------------------------------------------------------------- */
+
+.gpseo-table-wrap {
+	overflow-x: auto;
+	border-radius: var(--gpseo-radius-sm);
+}
+
+table.gpseo-table {
+	border-color: var(--gpseo-border);
+}
+
+table.gpseo-table th {
+	font-weight: 600;
+}
+
+table.gpseo-table--plain,
+table.gpseo-table--plain th,
+table.gpseo-table--plain td {
+	border: none;
+	background: transparent;
+}
+
+table.gpseo-table--plain th {
+	width: 220px;
+	color: var(--gpseo-text-muted);
+	font-weight: 600;
+	vertical-align: top;
+}
+
+.gpseo-row-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 12px;
+	align-items: center;
+}
+
+.gpseo-row-actions .button-link {
+	padding: 0;
+}
+
+@media (max-width: 782px) {
+	.gpseo-table-wrap table.gpseo-table thead {
+		position: absolute;
+		left: -9999px;
+		top: -9999px;
+	}
+
+	.gpseo-table-wrap table.gpseo-table,
+	.gpseo-table-wrap table.gpseo-table tbody,
+	.gpseo-table-wrap table.gpseo-table tr,
+	.gpseo-table-wrap table.gpseo-table td {
+		display: block;
+		width: 100%;
+	}
+
+	.gpseo-table-wrap table.gpseo-table tr {
+		border: 1px solid var(--gpseo-border);
+		border-radius: var(--gpseo-radius-sm);
+		margin-bottom: 12px;
+		padding: 8px 12px;
+	}
+
+	.gpseo-table-wrap table.gpseo-table tr.gpseo-empty-row {
+		border: none;
+	}
+
+	.gpseo-table-wrap table.gpseo-table td {
+		border: none;
+		padding: 8px 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 10px;
+		align-items: center;
+	}
+
+	.gpseo-table-wrap table.gpseo-table td[data-label]::before {
+		content: attr(data-label);
+		flex: 0 0 100%;
+		font-weight: 600;
+		font-size: 11px;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		color: var(--gpseo-text-muted);
+	}
+
+	.gpseo-table-wrap table.gpseo-table td:not([data-label])::before,
+	.gpseo-table-wrap table.gpseo-table td[data-label=""]::before {
+		content: none;
+	}
+}
+
+/* -------------------------------------------------------------------- */
+/* Filters / search box / forms                                          */
+/* -------------------------------------------------------------------- */
+
+.gpseo-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+	margin: 0 0 16px;
+	padding: 12px;
+	background: var(--gpseo-bg);
+	border-radius: var(--gpseo-radius-sm);
+}
+
+.gpseo-filters__field {
+	display: flex;
+}
+
+.gpseo-search-box {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 16px;
+	max-width: 420px;
+}
+
+.gpseo-search-box input[type="search"] {
+	flex: 1 1 auto;
+	padding-left: 30px;
+}
+
+.gpseo-search-box__icon {
+	position: absolute;
+	left: 8px;
+	color: var(--gpseo-text-muted);
+	pointer-events: none;
+}
+
+.gpseo-checkbox-row {
+	display: block;
+	margin-bottom: 4px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Tooltips                                                              */
+/* -------------------------------------------------------------------- */
+
+.gpseo-tooltip {
+	position: relative;
+	display: inline-flex;
+	cursor: help;
+	color: var(--gpseo-text-muted);
+	vertical-align: middle;
+}
+
+.gpseo-tooltip .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.gpseo-tooltip::after {
+	content: attr(data-gpseo-tooltip);
+	position: absolute;
+	bottom: calc(100% + 8px);
+	left: 50%;
+	transform: translateX(-50%);
+	background: var(--gpseo-dark);
+	color: #fff;
+	padding: 6px 10px;
+	border-radius: var(--gpseo-radius-sm);
+	font-size: 12px;
+	font-weight: 400;
+	white-space: normal;
+	width: max-content;
+	max-width: 260px;
+	box-shadow: var(--gpseo-shadow);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.12s ease;
+	z-index: 10;
+}
+
+.gpseo-tooltip:hover::after,
+.gpseo-tooltip:focus-visible::after,
+.gpseo-tooltip:focus::after {
+	opacity: 1;
+}
+
+/* -------------------------------------------------------------------- */
+/* Pagination                                                            */
+/* -------------------------------------------------------------------- */
+
+.gpseo-pagination .tablenav-pages {
+	margin: 4px 0 0;
+}
+
+.gpseo-pagination .page-numbers {
+	display: inline-block;
+	padding: 4px 10px;
+	margin-right: 4px;
+	margin-bottom: 4px;
+	border: 1px solid var(--gpseo-border-strong);
+	border-radius: var(--gpseo-radius-sm);
+	text-decoration: none;
+}
+
+.gpseo-pagination .page-numbers.current {
+	background: var(--gpseo-primary);
+	border-color: var(--gpseo-primary-dark);
+	color: #1a1000;
+	font-weight: 600;
+}
+
+/* -------------------------------------------------------------------- */
+/* Audit progress                                                        */
+/* -------------------------------------------------------------------- */
+
+.gpseo-audit-progress {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	max-width: 720px;
+	margin: 4px 0;
+}
+
+.gpseo-audit-progress progress {
+	width: min(360px, 60vw);
+	height: 14px;
+	border-radius: 999px;
+	overflow: hidden;
+}
+
+.gpseo-audit-progress progress::-webkit-progress-value {
+	background: var(--gpseo-primary);
+}
+
+.gpseo-audit-progress progress::-moz-progress-bar {
+	background: var(--gpseo-primary);
+}
+
+.gpseo-audit-progress-label {
+	color: var(--gpseo-text-muted);
+	font-size: 12.5px;
+	white-space: nowrap;
+}
+
+@media (max-width: 782px) {
+	.gpseo-audit-progress {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+}
+
+/* -------------------------------------------------------------------- */
+/* Issue detail / audit detail layouts                                   */
+/* -------------------------------------------------------------------- */
+
+.gpseo-detail-heading {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-bottom: 4px;
+}
+
+.gpseo-detail-heading h2 {
+	margin: 0;
+}
+
+.gpseo-issue-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+	gap: 20px;
+	align-items: start;
+}
+
+.gpseo-evidence {
+	white-space: pre-wrap;
+	word-break: break-word;
+	max-height: 420px;
+	overflow: auto;
+	background: var(--gpseo-bg);
+	border: 1px solid var(--gpseo-border);
+	border-radius: var(--gpseo-radius-sm);
+	padding: 12px;
+	font-size: 12px;
+}
+
+.gpseo-category-scores {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 20px;
+}
+
+.gpseo-summary-chip {
+	display: inline-block;
+	background: var(--gpseo-bg);
+	border: 1px solid var(--gpseo-border);
+	border-radius: var(--gpseo-radius-sm);
+	padding: 6px 10px;
+	margin: 0 6px 6px 0;
+	font-size: 13px;
+}
+
+@media (max-width: 960px) {
+	.gpseo-issue-layout {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 782px) {
+	.gpseo-filters {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.gpseo-filters__field,
+	.gpseo-filters select,
+	.gpseo-filters input {
+		width: 100%;
+	}
+
+	.gpseo-search-box {
+		max-width: 100%;
+	}
+}
+
+/* -------------------------------------------------------------------- */
+/* Confirm modal (JS-driven)                                             */
+/* -------------------------------------------------------------------- */
+
+.gpseo-modal-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(10, 10, 10, 0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 100000;
+	padding: 20px;
+}
+
+.gpseo-modal {
+	background: var(--gpseo-surface);
+	border-radius: var(--gpseo-radius);
+	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+	max-width: 420px;
+	width: 100%;
+	padding: 20px;
+}
+
+.gpseo-modal h2 {
+	margin: 0 0 10px;
+	font-size: 16px;
+}
+
+.gpseo-modal p {
+	margin: 0 0 16px;
+	color: var(--gpseo-text);
+}
+
+.gpseo-modal textarea {
+	width: 100%;
+	margin-bottom: 16px;
+}
+
+.gpseo-modal__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Metabox (post editor)                                                 */
+/* -------------------------------------------------------------------- */
+
+.gpseo-metabox .gpseo-content-audit-summary {
+	background: var(--gpseo-bg);
+	border-radius: var(--gpseo-radius-sm);
+	padding: 12px 14px;
+	margin-bottom: 14px;
+}
+
+.gpseo-metabox .gpseo-content-audit-summary h3 {
+	margin-top: 0;
 }
 
 .gpseo-social-preview {
 	display: flex;
-	border: 1px solid #dcdcde;
-	border-radius: 4px;
+	border: 1px solid var(--gpseo-border, #dcdcde);
+	border-radius: var(--gpseo-radius-sm, 4px);
 	overflow: hidden;
 	max-width: 500px;
 	margin-top: 10px;
@@ -56,21 +938,18 @@
 	text-transform: uppercase;
 }
 
-.tablenav-pages {
-	margin: 12px 0;
-}
+/* -------------------------------------------------------------------- */
+/* Screen-reader text fallback (in case a very old core omits the class) */
+/* -------------------------------------------------------------------- */
 
-.tablenav-pages .page-numbers {
-	display: inline-block;
-	padding: 4px 9px;
-	margin-right: 4px;
-	border: 1px solid #c3c4c7;
-	border-radius: 3px;
-	text-decoration: none;
-}
-
-.tablenav-pages .page-numbers.current {
-	background: #2271b1;
-	border-color: #2271b1;
-	color: #fff;
+.gpseo-wrap .screen-reader-text {
+	border: 0;
+	clip: rect(1px, 1px, 1px, 1px);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	word-wrap: normal !important;
 }

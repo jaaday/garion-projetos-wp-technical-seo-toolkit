@@ -61,3 +61,25 @@
 		}
 	} );
 } )( window.gpseoMetaboxData || { i18n: {} } );
+
+( function ( wp, data ) {
+	'use strict';
+	if ( ! wp || ! wp.apiFetch ) { return; }
+	document.addEventListener( 'DOMContentLoaded', function () {
+		var button = document.getElementById( 'gpseo-audit-content' );
+		var status = document.getElementById( 'gpseo-content-audit-status' );
+		if ( ! button ) { return; }
+		function poll( auditId ) {
+			wp.apiFetch( { path: '/' + data.restNamespace + '/audits/' + auditId } ).then( function ( audit ) {
+				status.textContent = data.i18n.auditRunning + ' ' + audit.progress + '%';
+				if ( 'pending' === audit.status || 'running' === audit.status ) { window.setTimeout( function () { poll( auditId ); }, 2500 ); return; }
+				if ( 'completed' === audit.status ) { status.textContent = data.i18n.auditDone; window.setTimeout( function () { window.location.reload(); }, 700 ); return; }
+				button.disabled = false; status.textContent = audit.error_message || audit.status;
+			} ).catch( function ( error ) { button.disabled = false; status.textContent = error.message || ''; } );
+		}
+		button.addEventListener( 'click', function () {
+			button.disabled = true; status.textContent = data.i18n.auditRunning;
+			wp.apiFetch( { path: '/' + data.restNamespace + '/contents/' + data.postId + '/audit', method: 'POST' } ).then( function ( response ) { poll( response.audit_id ); } ).catch( function ( error ) { button.disabled = false; status.textContent = error.message || ''; } );
+		} );
+	} );
+} )( window.wp, window.gpseoMetaboxData || { i18n: {} } );

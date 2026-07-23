@@ -19,7 +19,10 @@ class GP_SEO_404_Monitor {
 	const CRON_HOOK = 'gpseo_cleanup_404_log';
 
 	public function __construct() {
-		add_action( 'template_redirect', array( $this, 'maybe_log' ), 20 );
+		if ( ! GP_SEO_Rank_Math_Compatibility::is_module_active( '404-monitor' ) ) {
+			add_action( 'template_redirect', array( $this, 'maybe_log' ), 20 );
+		}
+
 		add_action( self::CRON_HOOK, array( $this, 'cleanup_old' ) );
 	}
 
@@ -42,6 +45,7 @@ class GP_SEO_404_Monitor {
 			hit_count BIGINT UNSIGNED NOT NULL DEFAULT 1,
 			first_seen DATETIME NOT NULL,
 			last_seen DATETIME NOT NULL,
+			is_ignored TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 			PRIMARY KEY  (id),
 			UNIQUE KEY url (url(191))
 		) {$charset_collate};";
@@ -138,6 +142,10 @@ class GP_SEO_404_Monitor {
 		return $wpdb->delete( self::table_name(), array( 'id' => (int) $id ), array( '%d' ) );
 	}
 
+	public function set_ignored( $id, $ignored = true ) {
+		global $wpdb;
+		return false !== $wpdb->update( self::table_name(), array( 'is_ignored' => $ignored ? 1 : 0 ), array( 'id' => (int) $id ), array( '%d' ), array( '%d' ) );
+	}
 	public function cleanup_old( $days = 90 ) {
 		global $wpdb;
 

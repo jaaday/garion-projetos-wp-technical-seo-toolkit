@@ -18,7 +18,7 @@ class GP_SEO_Social_Meta {
 	}
 
 	public function output() {
-		if ( ! is_singular() ) {
+		if ( GP_SEO_Rank_Math_Compatibility::is_active() || ! is_singular() ) {
 			return;
 		}
 
@@ -30,6 +30,7 @@ class GP_SEO_Social_Meta {
 
 		$data = self::get_data( $post );
 
+		printf( '<meta name="description" content="%s" />' . "\n", esc_attr( $data['description'] ) );
 		printf( '<meta property="og:type" content="%s" />' . "\n", esc_attr( $data['type'] ) );
 		printf( '<meta property="og:title" content="%s" />' . "\n", esc_attr( $data['title'] ) );
 		printf( '<meta property="og:description" content="%s" />' . "\n", esc_attr( $data['description'] ) );

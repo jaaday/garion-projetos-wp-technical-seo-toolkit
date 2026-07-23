@@ -13,12 +13,20 @@ class GP_SEO_Sitemap {
 	const PER_PAGE = 500;
 
 	public function __construct() {
+		if ( GP_SEO_Rank_Math_Compatibility::is_module_active( 'sitemap' ) ) {
+			return;
+		}
+
 		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
 		add_filter( 'query_vars', array( $this, 'add_query_vars' ) );
 		add_action( 'template_redirect', array( $this, 'maybe_render' ) );
 	}
 
 	public function add_rewrite_rules() {
+		self::register_rewrite_rules();
+	}
+
+	public static function register_rewrite_rules() {
 		add_rewrite_rule( '^sitemap\.xml$', 'index.php?gpseo_sitemap=index', 'top' );
 		add_rewrite_rule( '^sitemap-([a-z]+)-([0-9]+)\.xml$', 'index.php?gpseo_sitemap=$matches[1]&gpseo_sitemap_page=$matches[2]', 'top' );
 	}
@@ -31,6 +39,10 @@ class GP_SEO_Sitemap {
 	}
 
 	public static function sitemap_url() {
+		if ( GP_SEO_Rank_Math_Compatibility::is_module_active( 'sitemap' ) ) {
+			return home_url( '/sitemap_index.xml' );
+		}
+
 		return home_url( '/sitemap.xml' );
 	}
 
@@ -78,8 +90,13 @@ class GP_SEO_Sitemap {
 				AND NOT EXISTS (
 					SELECT 1 FROM {$wpdb->postmeta} pm
 					WHERE pm.post_id = p.ID AND pm.meta_key = '_gpseo_noindex' AND pm.meta_value = '1'
+				)
+				AND NOT EXISTS (
+					SELECT 1 FROM {$wpdb->postmeta} rm
+					WHERE rm.post_id = p.ID AND rm.meta_key = 'rank_math_robots' AND rm.meta_value LIKE %s
 				)",
-				$post_type
+				$post_type,
+				'%' . $wpdb->esc_like( 'noindex' ) . '%'
 			)
 		);
 	}
@@ -120,9 +137,14 @@ class GP_SEO_Sitemap {
 						SELECT 1 FROM {$wpdb->postmeta} pm
 						WHERE pm.post_id = p.ID AND pm.meta_key = '_gpseo_noindex' AND pm.meta_value = '1'
 					)
+				AND NOT EXISTS (
+					SELECT 1 FROM {$wpdb->postmeta} rm
+					WHERE rm.post_id = p.ID AND rm.meta_key = 'rank_math_robots' AND rm.meta_value LIKE %s
+				)
 					ORDER BY p.post_modified_gmt DESC
 					LIMIT %d OFFSET %d",
 					$post_type,
+					'%' . $wpdb->esc_like( 'noindex' ) . '%',
 					self::PER_PAGE,
 					$offset
 				)
